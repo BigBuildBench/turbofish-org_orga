@@ -1,0 +1,53 @@
+[package]
+name = "orga"
+version = "0.3.1"
+authors = ["Turbofish <team@turbofish.org>"]
+edition = "2021"
+description = "Deterministic state machine engine"
+license = "Apache-2.0"
+
+[dependencies]
+
+[dev-dependencies]
+tempfile = "3.10.1"
+serial_test = "3.0.0"
+pretty_env_logger = "0.5.0"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen-futures = "0.4.43"
+web-sys = { version = "0.3.70", features = ["Storage"] }
+
+[package.metadata.docs.rs]
+features = ["abci", "merk/full"]
+
+[features]
+default = []
+abci = [
+    "abci2",
+    "tendermint",
+    "tendermint-rpc",
+    "is_executable",
+    "home",
+    "secp256k1/rand-std",
+    "tokio/full",
+    "tonic",
+    "ibc-proto/server",
+    "reqwest",
+]
+merk-verify = ["merk/verify"]
+merk-full = ["merk/full", "ics23"]
+state-sync = []
+feat-ibc = ["ibc", "ics23", "prost-types", "ibc-proto", "tendermint"]
+
+[profile.release]
+lto = true
+
+[[example]]
+name = "ibc"
+required-features = ["abci", "merk-full", "feat-ibc"]
+
+[[example]]
+name = "app"
+crate-type = ["bin"]
+path = "examples/app/main.rs"
+required-features = ["feat-ibc", "merk-verify"]
